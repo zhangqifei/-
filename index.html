@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索</title>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+    <style>
+        /*解决闪烁*/
+        [v-cloak] {
+            display: none;
+        }
+
+        body {
+            background: url("1.jpg") repeat;
+
+        }
+
+        #app {
+            position: absolute;
+            width: 300px;
+            height: 40px;
+            left: 50%;
+            top: 29%;
+            margin-left: -150px;
+            margin-top: -20px;
+
+        }
+
+        #app input {
+            background: none;
+            outline: none;
+            width: 240px;
+            height: 40px;
+            line-height: 26px;
+            color: #000;
+            background: #fff;
+            padding: 15px;
+        }
+
+        ::-webkit-input-placeholder { /* WebKit browsers */
+            color: #584e4e;
+            text-align: center;
+        }
+
+        #app button {
+            width: 60px;
+            height: 40px;
+            line-height: 26px;
+            float: right;
+            background: #e2e2e2;
+            border-color: #e2e2e2;
+            border-radius: 0;
+            color: #000;
+        }
+
+        li {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <input id="search" type="text" placeholder="请输入要搜索的内容" v-model="query" @keyup="search" @keydown.down="down"
+           @keydown.up.prevent="up">
+    <button type="button" class="btn btn-default" @click="go">搜索</button>
+    <ul class="list-group" v-cloak>
+        <li v-for="(data,key) in dataS" class="list-group-item" v-for="data in dataS" :class="{active:index==key}"
+            @click="liQuery">
+            {{data}}
+        </li>
+    </ul>
+</div>
+<script src="vue2.0.js"></script>
+<script src="vue-resource.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            query: "",
+            index: -1,
+            dataS: []
+        },
+        methods: {
+            search(e){
+                var keyCode = e.keyCode;
+                if (keyCode == 38 || keyCode == 40) return;
+                if (keyCode == 13) {
+                    return window.location.href = 'https://www.baidu.com/s?wd=' + this.query;
+                    // return window.open('https://www.baidu.com/s?wd=' + this.query)
+                }
+                this.$http.jsonp("https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su", {
+                    params: {wd: this.query},
+                    jsonp: 'cb'
+                }).then(function (res) {
+                    var dataS = res.body.s;
+                    this.dataS = dataS;
+                })
+            },
+            down(){
+                if (this.index == this.dataS.length - 1) {
+                    this.index = 0
+                } else {
+                    this.index++;
+                }
+                this.query = this.dataS[this.index]
+            },
+            up(){
+                if (this.index == 0) {
+                    this.index = this.dataS.length - 1;
+                } else {
+                    this.index--;
+                }
+                this.query = this.dataS[this.index]
+            },
+            go(){
+                if (!this.query == "") {
+                    return window.location.href = 'https://www.baidu.com/s?wd=' + this.query;
+                }
+            },
+            liQuery(event){
+                var queryS = event.target.innerText;
+                return window.location.href = 'https://www.baidu.com/s?wd=' + queryS;
+            }
+        }
+    })
+</script>
+</body>
+</html>
