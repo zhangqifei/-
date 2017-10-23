@@ -60,7 +60,7 @@
 </head>
 <body>
 <div id="app">
-    <input id="search" type="text" placeholder="请输入要搜索的内容" v-model="query" @keyup="search" @keydown.down="down"
+    <input id="search" type="text" placeholder="请输入要搜索的内容" autofocus v-model="query" @keyup="search" @keydown.down="down"
            @keydown.up.prevent="up">
     <button type="button" class="btn btn-default" @click="go">搜索</button>
     <ul class="list-group" v-cloak>
